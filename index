@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-Test Videografi | XI DKV</title>
+  
+  <!-- Menggunakan Font Modern 'Poppins' dari Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --primary-color: #3b82f6;
+      --primary-hover: #2563eb;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #374151;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* Header Styling */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .header h1 {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.9em;
+    }
+
+    /* Card Styling */
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Form Input Styling */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      background-color: #2d3748;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 1em;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: var(--primary-color);
+    }
+
+    /* Radio Button Styling untuk Soal */
+    .option-label {
+      display: block;
+      background-color: #2d3748;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .option-label:hover {
+      background-color: #374151;
+    }
+
+    input[type="radio"] {
+      margin-right: 10px;
+      accent-color: var(--primary-color);
+      transform: scale(1.2);
+    }
+
+    /* Button Styling */
+    .btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn:disabled {
+      background-color: var(--border-color);
+      cursor: not-allowed;
+    }
+
+    /* Layout Sections */
+    #quiz-section, #loading-section, #result-section {
+      display: none;
+    }
+
+    .loader {
+      text-align: center;
+      padding: 50px;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <div class="header">
+      <h1>Matrikulasi Videografi</h1>
+      <p>Pre-Test Pengetahuan Dasar Pra-produksi s/d Pascaproduksi</p>
+    </div>
+
+    <!-- BAGIAN 1: FORM IDENTITAS -->
+    <div id="identity-section" class="card">
+      <h2 style="margin-bottom: 20px;">Data Siswa</h2>
+      <div class="form-group">
+        <label for="nama">Nama Lengkap</label>
+        <input type="text" id="nama" placeholder="Masukkan nama lengkap Anda..." required>
+      </div>
+      <div class="form-group">
+        <label for="kelas">Kelas</label>
+        <select id="kelas" required>
+          <option value="" disabled selected>-- Pilih Kelas --</option>
+          <option value="XI DKV 1">XI DKV 1</option>
+          <option value="XI DKV 2">XI DKV 2</option>
+          <option value="XI DKV 3">XI DKV 3</option>
+        </select>
+      </div>
+      <button class="btn" onclick="startQuiz()">Mulai Kerjakan Soal</button>
+    </div>
+
+    <!-- BAGIAN 2: LOADING SCREEN -->
+    <div id="loading-section" class="card loader">
+      <p>Memuat 50 soal dari database... Mohon tunggu.</p>
+    </div>
+
+    <!-- BAGIAN 3: AREA SOAL -->
+    <div id="quiz-section">
+      <form id="quiz-form">
+        <!-- Soal akan di-generate (disuntikkan) ke dalam div ini oleh JavaScript -->
+        <div id="questions-container"></div>
+        
+        <div class="card">
+          <button type="button" class="btn" id="submit-btn" onclick="submitAnswers()">Kirim Jawaban</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- BAGIAN 4: HASIL (SETELAH SUBMIT) -->
+    <div id="result-section" class="card" style="text-align: center;">
+      <h2 style="color: #10b981; margin-bottom: 10px;">Jawaban Berhasil Dikirim!</h2>
+      <p>Terima kasih telah mengerjakan pre-test ini.</p>
+      <p style="margin-top: 15px; font-size: 0.9em; color: var(--text-muted);">Skor dan analisis akan disampaikan oleh guru pengampu.</p>
+    </div>
+
+  </div>
+
+  <script>
+    // --- FRONTEND JAVASCRIPT ---
+    
+    // Fungsi untuk pindah dari halaman Identitas ke halaman Soal
+    function startQuiz() {
+      const nama = document.getElementById('nama').value;
+      const kelas = document.getElementById('kelas').value;
+
+      if(nama === "" || kelas === "") {
+        alert("Mohon isi Nama dan Kelas terlebih dahulu!");
+        return;
+      }
+
+      // Sembunyikan identitas, tampilkan loading
+      document.getElementById('identity-section').style.display = 'none';
+      document.getElementById('loading-section').style.display = 'block';
+
+      // Memanggil fungsi Google Apps Script di backend (Code.gs)
+      // Nanti di Tahap 4 kita akan buat fungsi 'getSoal' di Code.gs
+      google.script.run
+        .withSuccessHandler(renderSoal)
+        .getSoal(); 
+    }
+
+    // Fungsi untuk mencetak soal ke layar setelah data diambil dari Spreadsheet
+    function renderSoal(dataSoal) {
+      document.getElementById('loading-section').style.display = 'none';
+      document.getElementById('quiz-section').style.display = 'block';
+
+      const container = document.getElementById('questions-container');
+      let html = '';
+
+      // Looping sebanyak data soal (50 soal)
+      dataSoal.forEach((soal, index) => {
+        let no = index + 1;
+        html += `
+          <div class="card">
+            <h3 style="margin-bottom: 5px; font-size: 1em; color: var(--text-muted);">Soal ${no} | ${soal.kategori}</h3>
+            <p style="margin-bottom: 15px; font-weight: 600; line-height: 1.5;">${soal.pertanyaan}</p>
+            
+            <label class="option-label">
+              <input type="radio" name="soal_${soal.id}" value="A" required> A. ${soal.opsiA}
+            </label>
+            <label class="option-label">
+              <input type="radio" name="soal_${soal.id}" value="B"> B. ${soal.opsiB}
+            </label>
+            <label class="option-label">
+              <input type="radio" name="soal_${soal.id}" value="C"> C. ${soal.opsiC}
+            </label>
+            <label class="option-label">
+              <input type="radio" name="soal_${soal.id}" value="D"> D. ${soal.opsiD}
+            </label>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Fungsi untuk mengumpulkan jawaban dan mengirimnya ke Spreadsheet
+    function submitAnswers() {
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.innerText = "Mengirim data...";
+
+      const form = document.getElementById('quiz-form');
+      const formData = new FormData(form);
+      
+      // Mengumpulkan data identitas dan jawaban menjadi satu Object
+      let submission = {
+        nama: document.getElementById('nama').value,
+        kelas: document.getElementById('kelas').value,
+        jawaban: {}
+      };
+
+      for (let [key, value] of formData.entries()) {
+        submission.jawaban[key] = value; 
+        // Format key: "soal_1", "soal_2", dst.
+      }
+
+      // Kirim data ke backend (Code.gs) untuk dikoreksi otomatis
+      google.script.run
+        .withSuccessHandler(showResult)
+        .simpanJawaban(submission);
+    }
+
+    // Fungsi untuk menampilkan layar sukses setelah data tersimpan
+    function showResult() {
+      document.getElementById('quiz-section').style.display = 'none';
+      document.getElementById('result-section').style.display = 'block';
+    }
+  </script>
+
+</body>
+</html>
